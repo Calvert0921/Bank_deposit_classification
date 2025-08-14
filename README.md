@@ -1,1 +1,1 @@
-# Binary_Classification_with_a_Bank_Dataset
+# Binary Classification with a Bank Dataset
