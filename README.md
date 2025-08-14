@@ -1,1 +1,1 @@
-# Bank_deposit_classification
+# Binary_Classification_with_a_Bank_Dataset
