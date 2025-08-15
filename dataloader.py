@@ -89,6 +89,10 @@ def get_dataloaders(
     assert os.path.exists(train_csv), f"{train_csv} not found"
     train_df = pd.read_csv(train_csv)
 
+    # Drop leakage column 'duration' if present
+    if 'duration' in train_df.columns:
+        train_df = train_df.drop(columns=['duration'])
+
     # 1) Detect target column
     tgt = _infer_target_col(train_df, target_col)
 
@@ -130,7 +134,10 @@ def get_dataloaders(
 
     # 5) Fit preprocessors (only on training set)
     scaler = StandardScaler() if num_cols else None
-    ohe = OneHotEncoder(handle_unknown="ignore", sparse=False) if cat_cols else None
+    try:
+        ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False) if cat_cols else None
+    except TypeError:
+        ohe = OneHotEncoder(handle_unknown="ignore", sparse=False) if cat_cols else None
 
     # Numeric features
     if scaler:
@@ -188,6 +195,9 @@ def get_dataloaders(
     test_loader = None
     if test_csv is not None and os.path.exists(test_csv):
         test_df = pd.read_csv(test_csv)
+        # Drop leakage column 'duration' if present
+        if 'duration' in test_df.columns:
+            test_df = test_df.drop(columns=['duration'])
         ids_test = test_df[id_col].values if (id_col and id_col in test_df.columns) else None
         if id_col and id_col in test_df.columns:
             test_df = test_df.drop(columns=[id_col])
@@ -238,3 +248,11 @@ if __name__ == "__main__":
         print("Test batches:", len(loaders["test_loader"]))
     print("Num features:", len(loaders["preprocess"]["feature_names"]))
     print("Target:", loaders["preprocess"]["target_name"], "Classes:", loaders["preprocess"]["classes_"])
+
+
+# Alias for compatibility with training scripts
+def make_dataloaders(*args, **kwargs):
+    res = get_dataloaders(*args, **kwargs)
+    if isinstance(res, dict):
+        return res["train_loader"], res["val_loader"]
+    return res

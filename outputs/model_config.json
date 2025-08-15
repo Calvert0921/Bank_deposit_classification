@@ -1,0 +1,15 @@
+{
+  "input_dim": 51,
+  "hidden_dims": [
+    256,
+    128
+  ],
+  "dropout": 0.2,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "pos_weight": 0.9998162984848022,
+  "threshold": 0.6780924797058105,
+  "val_auprc": 0.5028283568690349,
+  "val_auroc": 0.8319516356858698,
+  "seed": 42
+}
